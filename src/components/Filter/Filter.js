@@ -2,25 +2,42 @@ import { useSelector, useDispatch } from 'react-redux';
 import { changeFilter } from 'components/Redux/Actions';
 import PropTypes from 'prop-types';
 
-export default function Filter() {
-  const filter = useSelector(state => state.filter);
+export const Filter = () => {
+  const filter = useSelector(state => state.contacts.filter);
   const dispatch = useDispatch();
-
-  const handleChangeFilter = e => dispatch(changeFilter(e.target.value));
+  const handleFilter = e => dispatch(changeFilter(e.currentTarget.value));
   return (
-    <>
-      <label name="filter" htmlFor="filter" value={filter}>
-        Find contacts by name
-      </label>
+    <label htmlFor="inpfilter">
+      Find contacts by name
       <input
-        value={filter}
         type="text"
-        id="filter"
-        onChange={handleChangeFilter}
+        id="inpfilter"
+        name="filter"
+        value={filter}
+        onChange={handleFilter}
       />
-    </>
+    </label>
   );
-}
+};
+// export default function Filter() {
+//   const filter = useSelector(state => state.filter);
+//   const dispatch = useDispatch();
+
+//   const handleChangeFilter = e => dispatch(changeFilter(e.target.value));
+//   return (
+//     <>
+//       <label name="filter" htmlFor="filter" value={filter}>
+//         Find contacts by name
+//       </label>
+//       <input
+//         value={filter}
+//         type="text"
+//         id="filter"
+//         onChange={handleChangeFilter}
+//       />
+//     </>
+//   );
+// }
 
 Filter.propTypes = {
   filter: PropTypes.string,

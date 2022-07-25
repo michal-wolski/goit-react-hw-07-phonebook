@@ -1,23 +1,38 @@
 import { combineReducers, createReducer } from '@reduxjs/toolkit';
-import { changeFilter, addContacts, deleteContacts } from './Actions';
-import defaultContacts from 'components/base/DefaultContacts';
+import { changeFilter } from './Actions';
+import { fetch, post, deleteThunk } from './Thunk';
 
-const contactsReducer = createReducer(
-  JSON.parse(window.localStorage.getItem('contacts')) ?? defaultContacts,
-  {
-    [addContacts]: (state, { payload }) => [...state, payload],
-    [deleteContacts]: (state, { payload }) =>
-      state.filter(contact => {
-        return contact.id !== payload;
-      }),
-  }
-);
-
-const filterReducer = createReducer('', {
+const items = createReducer([], {
+  [fetch.fulfilled]: (_, { payload }) => payload,
+  [post.fulfilled]: (state, { payload }) => [...state, payload],
+  [deleteThunk.fulfilled]: (state, { payload }) =>
+    state.filter(item => item.id !== payload.id),
+});
+const error = createReducer(null, {
+  [fetch.rejected]: (_, { payload }) => payload,
+  [post.rejected]: (_, { payload }) => payload,
+  [deleteThunk.rejected]: (_, { payload }) => payload,
+  [fetch.pending]: () => null,
+  [post.pending]: () => null,
+  [deleteThunk.pending]: () => null,
+});
+const isLoading = createReducer(false, {
+  [fetch.pending]: () => true,
+  [fetch.fulfilled]: () => false,
+  [fetch.rejected]: () => false,
+  [post.pending]: () => true,
+  [post.fulfilled]: () => false,
+  [post.rejected]: () => false,
+  [deleteThunk.pending]: () => true,
+  [deleteThunk.fulfilled]: () => false,
+  [deleteThunk.rejected]: () => false,
+});
+const filter = createReducer('', {
   [changeFilter]: (_, { payload }) => payload,
 });
-
-export default combineReducers({
-  contacts: contactsReducer,
-  filter: filterReducer,
+export const rootReducer = combineReducers({
+  items,
+  isLoading,
+  error,
+  filter,
 });
